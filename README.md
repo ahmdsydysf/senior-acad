@@ -75,14 +75,18 @@ request to the Next.js request handler.
 
    ```bash
    npm run build
-   tar -czf next-build.tar.gz --exclude='./.next/cache' ./.next ./next.config.ts ./.env.production
+   tar -czf next-build.tar.gz --exclude='./.next/cache' ./.next ./.env.production
    ```
 
    Upload `next-build.tar.gz` to the app root and extract it there (cPanel
    File Manager → Extract). `.next/cache` is deliberately excluded; it is
-   build-time only and not needed to serve. `next.config.ts` is bundled
-   because Next reads it at **runtime** as well as build time — a stale copy
-   on the host means a stale `basePath`.
+   build-time only and not needed to serve.
+
+   The bundle deliberately contains **only git-ignored files**. If the app
+   root is also a git checkout, anything tracked (like `next.config.ts`)
+   would be left modified in the working tree and the next `git pull` would
+   abort with *"Your local changes would be overwritten by merge"*. Source
+   files come from git; only build output comes from the tarball.
 7. **Restart** the app (or `touch tmp/restart.txt`, which is how Passenger
    picks up changes).
 
