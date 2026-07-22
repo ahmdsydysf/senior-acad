@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Course } from "@/lib/types";
 import { getCertificate, getCourses, getGeneralData } from "@/lib/api";
@@ -15,12 +14,15 @@ function RecommendedCourses({ courses }: { courses: Course[] }) {
           Advance your career:{" "}
           <span className="text-maroon">Next Recommended</span> Courses
         </h2>
+        {/* Hidden until there is an all-courses page to link to.
+            Restoring this also needs `import Link from "next/link"` back.
         <Link
           href="/#courses"
           className="hidden rounded-full border border-maroon/40 bg-cream-card px-4 py-2 font-mono text-xs uppercase tracking-[0.1em] text-ink transition hover:-translate-y-0.5 hover:border-maroon hover:bg-maroon hover:text-cream-card hover:shadow-md sm:inline"
         >
           View all courses
         </Link>
+        */}
       </div>
       <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-ink-soft">
         Recommended for you

@@ -15,12 +15,14 @@ export default async function Home() {
             Advance your career:{" "}
             <span className="text-maroon">Next Recommended</span> Courses
           </h2>
+          {/* Hidden until there is an all-courses page to link to.
           <a
             href="#"
             className="hidden rounded-full border border-maroon/40 bg-cream-card px-4 py-2 font-mono text-xs uppercase tracking-[0.1em] text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-maroon hover:bg-maroon hover:text-cream-card hover:shadow-md sm:inline"
           >
             View all courses
           </a>
+          */}
         </div>
         <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-ink-soft">
           Recommended for you
