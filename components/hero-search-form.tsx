@@ -1,26 +1,41 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 
 const FALLBACK_MISSION = "Trusted & secured by Senior Academy technology";
 
+/**
+ * Owns the input's value itself rather than lifting it to the page.
+ *
+ * Keystrokes are the highest-frequency state change on the site; keeping them
+ * local means typing re-renders only this form, not the hero, the logo or the
+ * certificate panel above/below it. The parent hears about the value once, on
+ * submit.
+ */
 export default function HeroSearchForm({
-  value,
-  onChange,
-  onSubmit,
+  defaultValue = "",
+  onSearch,
   loading = false,
   mission,
 }: {
-  value: string;
-  onChange: (v: string) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  defaultValue?: string;
+  onSearch: (id: string) => void;
   loading?: boolean;
   mission?: string | null;
 }) {
+  const [value, setValue] = useState(defaultValue);
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    // Without this the browser performs a native form GET — a full page reload.
+    e.preventDefault();
+    const id = value.trim();
+    if (id) onSearch(id);
+  }
+
   return (
     <div className="w-full">
       <form
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         className="mx-auto flex max-w-2xl flex-col gap-3 rounded-full bg-cream-card p-2 shadow-[0_8px_30px_-12px_rgba(28,31,43,0.25)] ring-1 ring-line transition-all duration-300 focus-within:ring-2 focus-within:ring-maroon/50 focus-within:shadow-[0_10px_40px_-10px_rgba(171,13,16,0.35)] sm:flex-row sm:items-center"
       >
         <div className="flex flex-1 items-center gap-2 px-4 py-2">
@@ -40,7 +55,7 @@ export default function HeroSearchForm({
           <input
             id="cert-id"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => setValue(e.target.value)}
             placeholder="Enter Certificate ID"
             autoComplete="off"
             className="w-full bg-transparent font-body text-sm text-ink placeholder:text-ink-soft outline-none"

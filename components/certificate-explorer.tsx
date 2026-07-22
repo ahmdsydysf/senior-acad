@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, FormEvent } from "react";
+import { useRef, useState } from "react";
 import Hero from "@/components/hero";
 import HeroSearchForm from "@/components/hero-search-form";
 import PanelShell from "@/components/panel-shell";
@@ -33,7 +33,9 @@ export default function CertificateExplorer({
   initialId?: string;
   initialResult?: CertificateResult | null;
 }) {
-  const [certId, setCertId] = useState(initialId);
+  // Note: the search input's value deliberately lives inside HeroSearchForm.
+  // Holding it here would re-render the hero and the record panel on every
+  // keystroke.
   const [state, setState] = useState<State>(() =>
     initialResult && initialId
       ? { phase: "result", id: initialId, result: initialResult }
@@ -44,14 +46,7 @@ export default function CertificateExplorer({
   // overwrite the result of a faster second one.
   const latestRequest = useRef(0);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    // Without this the browser performs a native form GET, which is a full
-    // page reload.
-    e.preventDefault();
-
-    const id = certId.trim();
-    if (!id) return;
-
+  async function handleSearch(id: string) {
     const requestId = ++latestRequest.current;
     setState({ phase: "loading" });
 
@@ -99,9 +94,8 @@ export default function CertificateExplorer({
     <>
       <Hero about={about}>
         <HeroSearchForm
-          value={certId}
-          onChange={setCertId}
-          onSubmit={handleSubmit}
+          defaultValue={initialId}
+          onSearch={handleSearch}
           loading={state.phase === "loading"}
           mission={about?.mission}
         />
