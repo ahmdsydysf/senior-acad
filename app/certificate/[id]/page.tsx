@@ -1,12 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CertificateRecord, Course, GeneralData } from "@/lib/types";
+import { Course } from "@/lib/types";
 import { getCertificate, getCourses, getGeneralData } from "@/lib/api";
-import Hero from "@/components/hero";
-import QuickSearch from "@/components/quick-search";
-import PanelShell from "@/components/panel-shell";
-import EmptyRecordCard from "@/components/empty-record-card";
-import CertificateRecordBody from "@/components/certificate-record-body";
+import CertificateExplorer from "@/components/certificate-explorer";
 import CourseCard from "@/components/course-card";
 
 function RecommendedCourses({ courses }: { courses: Course[] }) {
@@ -39,51 +35,6 @@ function RecommendedCourses({ courses }: { courses: Course[] }) {
   );
 }
 
-function CertificatePageContent({
-  record,
-  courses,
-  about,
-}: {
-  record: CertificateRecord;
-  courses: Course[];
-  about?: GeneralData["about"] | null;
-}) {
-  return (
-    <>
-      <Hero about={about}>
-        <QuickSearch initialId={record.id} mission={about?.mission} />
-      </Hero>
-
-      <PanelShell eyebrow={`Certificate Record — ${record.id}`}>
-        <CertificateRecordBody record={record} />
-      </PanelShell>
-
-      <RecommendedCourses courses={courses} />
-    </>
-  );
-}
-
-function PendingNotice({
-  id,
-  message,
-  about,
-}: {
-  id: string;
-  message: string;
-  about?: GeneralData["about"] | null;
-}) {
-  return (
-    <>
-      <Hero about={about}>
-        <QuickSearch initialId={id} mission={about?.mission} />
-      </Hero>
-      <PanelShell eyebrow={`Certificate Record — ${id}`}>
-        <EmptyRecordCard message={message} tone="idle" />
-      </PanelShell>
-    </>
-  );
-}
-
 export default async function CertificatePage({
   params,
 }: {
@@ -97,26 +48,26 @@ export default async function CertificatePage({
     getGeneralData(),
   ]);
 
-  if (result.status === "verified") {
-    return (
-      <CertificatePageContent
-        record={result.record}
-        courses={courses}
-        about={general?.about}
-      />
-    );
+  // A bad or unreachable code still 404s on a direct hit, rather than
+  // rendering an empty record panel.
+  if (result.status === "not_found" || result.status === "error") {
+    notFound();
   }
 
-  if (result.status === "pending") {
-    return (
-      <PendingNotice
-        id={result.code}
-        message={result.message}
+  return (
+    <>
+      {/*
+        Same component the homepage uses, seeded with the server-rendered
+        result. Deep links render the record without waiting for JS, and
+        searching from here swaps the panel in place instead of navigating.
+      */}
+      <CertificateExplorer
         about={general?.about}
+        initialId={result.status === "verified" ? result.record.id : result.code}
+        initialResult={result}
       />
-    );
-  }
 
-  // not_found or error -> render the framework 404.
-  notFound();
+      <RecommendedCourses courses={courses} />
+    </>
+  );
 }

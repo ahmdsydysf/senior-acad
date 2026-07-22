@@ -1,4 +1,4 @@
-import CertificateSearchPanel from "@/components/certificate-search-panel";
+import CertificateExplorer from "@/components/certificate-explorer";
 import CourseCard from "@/components/course-card";
 import { getCourses, getGeneralData } from "@/lib/api";
 
@@ -7,7 +7,7 @@ export default async function Home() {
 
   return (
     <>
-      <CertificateSearchPanel about={general?.about} />
+      <CertificateExplorer about={general?.about} />
 
       <section id="courses" className="mx-auto max-w-6xl px-6 py-16">
         <div className="flex items-end justify-between">

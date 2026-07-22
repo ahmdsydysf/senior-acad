@@ -9,69 +9,90 @@ import CertificateRecordBody from "@/components/certificate-record-body";
 import type { CertificateResult } from "@/lib/api";
 import type { GeneralData } from "@/lib/types";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 type State =
   | { phase: "idle" }
   | { phase: "loading" }
   | { phase: "result"; id: string; result: CertificateResult };
 
-export default function CertificateSearchPanel({
+/**
+ * Hero + search box + the "Certificate Record" panel.
+ *
+ * Used by both the homepage and /certificate/[id]: searching never navigates,
+ * it swaps only the panel body. The certificate page seeds it with a
+ * server-rendered result so deep links still work without JavaScript running
+ * first, and so search engines see the record.
+ */
+export default function CertificateExplorer({
   about,
+  initialId = "",
+  initialResult = null,
 }: {
   about?: GeneralData["about"] | null;
+  initialId?: string;
+  initialResult?: CertificateResult | null;
 }) {
-  const [certId, setCertId] = useState("");
-  const [state, setState] = useState<State>({ phase: "idle" });
+  const [certId, setCertId] = useState(initialId);
+  const [state, setState] = useState<State>(() =>
+    initialResult && initialId
+      ? { phase: "result", id: initialId, result: initialResult }
+      : { phase: "idle" }
+  );
 
   // Guards against out-of-order responses: a slow first lookup must not
   // overwrite the result of a faster second one.
   const latestRequest = useRef(0);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    // Without this the browser performs a native form GET, which is a full
+    // page reload.
     e.preventDefault();
+
     const id = certId.trim();
     if (!id) return;
 
     const requestId = ++latestRequest.current;
     setState({ phase: "loading" });
 
+    let result: CertificateResult;
     try {
       // basePath is applied to <Link>/router/next-image automatically, but not
       // to hand-written fetch URLs — prefix it explicitly.
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_PATH}/api/certificates/${encodeURIComponent(id)}`
+        `${BASE_PATH}/api/certificates/${encodeURIComponent(id)}`
       );
-      const result = (await res.json().catch(() => null)) as
-        | CertificateResult
-        | null;
-
-      if (requestId !== latestRequest.current) return;
-
-      setState({
-        phase: "result",
-        id,
-        result: result ?? {
-          status: "error",
-          message: "Something went wrong looking that up. Please try again.",
-        },
-      });
+      result = ((await res.json().catch(() => null)) as CertificateResult) ?? {
+        status: "error",
+        message: "Something went wrong looking that up. Please try again.",
+      };
     } catch {
-      if (requestId !== latestRequest.current) return;
-      setState({
-        phase: "result",
-        id,
-        result: {
-          status: "error",
-          message: "Something went wrong looking that up. Please try again.",
-        },
-      });
+      result = {
+        status: "error",
+        message: "Something went wrong looking that up. Please try again.",
+      };
+    }
+
+    if (requestId !== latestRequest.current) return;
+
+    setState({ phase: "result", id, result });
+
+    // Keep the address bar honest without navigating, so the result stays
+    // shareable and a refresh renders the same certificate server-side.
+    if (result.status === "verified" || result.status === "pending") {
+      window.history.replaceState(
+        null,
+        "",
+        `${BASE_PATH}/certificate/${encodeURIComponent(id)}`
+      );
     }
   }
 
   const eyebrow =
-    state.phase === "result" && state.result.status === "verified"
-      ? `Certificate Record — ${state.result.record.id}`
-      : state.phase === "result"
-      ? `Certificate Record — ${state.id}`
+    state.phase === "result"
+      ? `Certificate Record — ${
+          state.result.status === "verified" ? state.result.record.id : state.id
+        }`
       : "Certificate Record";
 
   return (
@@ -108,7 +129,9 @@ function PanelBody({ state }: { state: State }) {
   }
 
   if (state.phase === "loading") {
-    return <EmptyRecordCard message="Checking that certificate ID…" tone="loading" />;
+    return (
+      <EmptyRecordCard message="Checking that certificate ID…" tone="loading" />
+    );
   }
 
   const { result, id } = state;
