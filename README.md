@@ -13,31 +13,41 @@ npm install
 npm run dev
 ```
 
-Try certificate ID **CERT-12294** on the homepage to see a verified result.
+The pages read from the Laravel backend, so start that too (see below).
+Without it the homepage renders with an empty course list and every
+certificate lookup returns 404.
 
-## Where the data comes from right now
+## Where the data comes from
 
-`lib/mock-data.ts` holds a single mock certificate, and
-`app/api/certificates/[id]/route.ts` serves it as
-`GET /api/certificates/:id`. The frontend (`components/verify-form.tsx`
-and `app/certificate/[id]/page.tsx`) only depends on the JSON shape in
-`lib/types.ts` (`CertificateRecord`).
+`lib/api.ts` is the only place that talks to the Laravel backend's public
+`/api/v1` API. It maps the raw snake_case payloads onto the camelCase view
+models in `lib/types.ts` (`CertificateRecord`, `Course`, `GeneralData`).
 
-## Wiring up your real API
+Point it at the backend with `BACKEND_URL`; it defaults to
+`http://127.0.0.1:8000`:
 
-When your outside API is ready, you have two options:
+```bash
+BACKEND_URL=https://api.example.com npm run dev
+```
 
-1. **Keep this route as a proxy** — inside
-   `app/api/certificates/[id]/route.ts`, replace the call to
-   `lookupCertificate` with a `fetch()` to your real service (good if you
-   want to hide the upstream URL/keys from the browser, or reshape the
-   response).
-2. **Call the outside API directly from the client** — update the
-   `fetch("/api/certificates/...")` call in `components/verify-form.tsx`
-   to point at your API's URL instead, and delete the route file.
+Every call runs server-side (server components + route handlers), so the
+browser never talks to Laravel directly and no CORS config is needed.
+`app/api/certificates/[id]/route.ts` is a same-origin proxy for the
+lightweight existence check the search boxes hit before navigating.
 
-Either way, keep the response matching `CertificateRecord` in
-`lib/types.ts` (or update that type and the two consumers together).
+## Troubleshooting
+
+**`next dev` hangs forever on `○ Compiling / ...`** — Turbopack's
+filesystem cache (on by default for dev since Next 16.1) is corrupted.
+Delete the build directory and restart:
+
+```bash
+rm -rf .next
+```
+
+If it keeps recurring, turn the cache off in `next.config.ts` with
+`experimental.turbopackFileSystemCacheForDev: false` (slower cold starts,
+but no cache to corrupt).
 
 ## Note on fonts
 
