@@ -19,7 +19,7 @@ function StatRow({
         {typeof percent === "number" && (
           <div className="mt-1.5 h-1 w-full max-w-[9rem] rounded-full bg-cream-card/15">
             <div
-              className="h-1 rounded-full bg-gold"
+              className="h-1 rounded-full bg-[#987233]"
               style={{ width: `${percent}%` }}
             />
           </div>
@@ -35,35 +35,30 @@ export default function CertificateRecordCard({
 }: {
   record: CertificateRecord;
 }) {
-  const issueDate = new Date(record.issueDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const issueDate = record.issueDate
+    ? new Date(record.issueDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "—";
 
   return (
-    <div className="seal-stamp rounded-3xl border border-maroon-card-line bg-maroon-card p-7 sm:p-8">
-      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-gold">
-        Certificate — {record.track}
+    <div className="seal-stamp rounded-3xl border border-[#e6d0bf] bg-maroon-card p-7 sm:p-8">
+      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-cream-card">
+        Certificate — {record.academyName}
       </p>
       <h3 className="mt-2 font-display text-2xl leading-snug text-cream-card">
         {record.courseName}
       </h3>
-      <p className="font-body text-sm text-cream-card/70">
-        Senior Academy — Full-Stack Engineering
-      </p>
+      <p className="font-body text-sm text-cream-card/70">{record.academyName}</p>
 
-      <div className="mt-5 divide-y divide-maroon-card-line border-y border-maroon-card-line">
+      <div className="mt-5 divide-y divide-[#e6d0bf] border-y border-[#e6d0bf]">
         <StatRow label="Student name" value={record.studentName} />
         <StatRow
           label="Course completion"
           value={`${record.completionPercent}%`}
           percent={record.completionPercent}
-        />
-        <StatRow
-          label="Module score"
-          value={`${record.moduleScore}/100`}
-          percent={record.moduleScore}
         />
         <StatRow label="Issued" value={issueDate} />
         <StatRow label="Duration" value={`${record.durationWeeks} weeks`} />
@@ -81,7 +76,7 @@ export default function CertificateRecordCard({
       </div>
 
       <div className="mt-6">
-        <DownloadPdfButton certificateId={record.id} />
+        <DownloadPdfButton certificateId={record.id} pdfUrl={record.pdfUrl} />
       </div>
 
       <div className="mt-6 flex justify-center gap-1.5">

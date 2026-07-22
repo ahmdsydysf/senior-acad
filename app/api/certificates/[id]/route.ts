@@ -1,49 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { lookupCertificate } from "@/lib/mock-data";
+import { verifyCertificate } from "@/lib/api";
 
-function getBackendUrl() {
-  const url = process.env.BACKEND_URL;
-  return url?.replace(/\/$/, "");
-}
-
+// Lightweight existence check the search boxes hit before navigating to the
+// full certificate page. Proxies GET /api/v1/certificates/verify on the backend
+// so the browser stays same-origin (no CORS needed).
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const mockRecord = lookupCertificate(id);
-  if (mockRecord) {
-    return NextResponse.json(mockRecord);
+  const { exists, status } = await verifyCertificate(id);
+
+  if (!exists) {
+    return NextResponse.json({ exists: false, id }, { status: 404 });
   }
 
-  const backendUrl = getBackendUrl();
-  if (!backendUrl) {
-    return NextResponse.json({ status: "not_found", id }, { status: 404 });
-  }
-
-  try {
-    const res = await fetch(
-      `${backendUrl}/api/certificates/${encodeURIComponent(id)}`,
-      { cache: "no-store" }
-    );
-
-    if (res.status === 404) {
-      return NextResponse.json({ status: "not_found", id }, { status: 404 });
-    }
-
-    if (!res.ok) {
-      return NextResponse.json(
-        { status: "error", message: "External backend request failed." },
-        { status: res.status }
-      );
-    }
-
-    const record = await res.json();
-    return NextResponse.json(record);
-  } catch {
-    return NextResponse.json(
-      { status: "error", message: "External backend request failed." },
-      { status: 502 }
-    );
-  }
+  return NextResponse.json({ exists: true, id, status });
 }

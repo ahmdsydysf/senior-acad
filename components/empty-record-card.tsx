@@ -6,12 +6,12 @@ export default function EmptyRecordCard({
   tone?: "idle" | "loading" | "error";
 }) {
   return (
-    <div className="relative flex min-h-[22rem] items-center justify-center overflow-hidden rounded-3xl border border-maroon-card-line bg-maroon-card/40 px-6 py-20">
+    <div className="relative flex min-h-[22rem] items-center justify-center overflow-hidden rounded-3xl border border-[#e6d0bf] bg-maroon-card/40 px-6 py-20 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
       {/* big academy-themed watermark icons */}
       {/* graduation cap */}
       <svg
         viewBox="0 0 64 64"
-        className="anim-float absolute left-8 top-8 h-28 w-28 text-cream-card/10 -rotate-6"
+        className="anim-float absolute left-[calc(var(--spacing)*85)] top-8 h-28 w-28 text-cream-card/10 -rotate-6"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
@@ -26,7 +26,7 @@ export default function EmptyRecordCard({
       {/* diploma scroll with ribbon */}
       <svg
         viewBox="0 0 64 64"
-        className="anim-float-slow absolute bottom-8 left-14 h-24 w-24 text-cream-card/10 rotate-6"
+        className="anim-float-slow absolute bottom-8 left-[calc(var(--spacing)*75)] h-24 w-24 text-cream-card/10 rotate-6"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
@@ -42,7 +42,7 @@ export default function EmptyRecordCard({
       {/* award medal */}
       <svg
         viewBox="0 0 64 64"
-        className="anim-float-slow absolute right-12 top-10 h-24 w-24 text-cream-card/10 rotate-6"
+        className="anim-float-slow absolute right-[calc(var(--spacing)*85)] top-10 h-24 w-24 text-cream-card/10 rotate-6"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
@@ -60,7 +60,7 @@ export default function EmptyRecordCard({
       {/* open book */}
       <svg
         viewBox="0 0 64 64"
-        className="anim-float absolute bottom-8 right-8 h-28 w-28 text-cream-card/10 -rotate-3"
+        className="anim-float absolute bottom-8 right-[calc(var(--spacing)*75)] h-28 w-28 text-cream-card/10 -rotate-3"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"

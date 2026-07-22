@@ -71,7 +71,7 @@ export default function HeroSearchForm({
       </form>
 
       <div className="mt-4 flex justify-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream-card px-4 py-1.5 font-mono text-[11px] text-ink-soft transition-colors duration-300 hover:border-gold-deep/40 hover:text-ink">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream-card px-4 py-1.5 font-mono text-[11px] text-ink transition-colors duration-300 hover:border-gold-deep/40 hover:text-ink">
           <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 text-gold-deep" fill="currentColor">
             <path d="M10 1.5 3 4.5v5c0 5 3 8.5 7 9.5 4-1 7-4.5 7-9.5v-5L10 1.5Z" />
           </svg>

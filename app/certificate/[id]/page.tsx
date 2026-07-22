@@ -1,20 +1,55 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CertificateRecord } from "@/lib/types";
-import { lookupCertificate } from "@/lib/mock-data";
+import { CertificateRecord, Course } from "@/lib/types";
+import { getCertificate, getCourses } from "@/lib/api";
 import Hero from "@/components/hero";
 import QuickSearch from "@/components/quick-search";
 import PanelShell from "@/components/panel-shell";
+import EmptyRecordCard from "@/components/empty-record-card";
 import CertificateRecordCard from "@/components/certificate-record-card";
 import InterviewVideoCard from "@/components/interview-video-card";
 import TestimonialCard from "@/components/testimonial-card";
 import CourseCard from "@/components/course-card";
 
-function getBackendUrl() {
-  const url = process.env.BACKEND_URL;
-  return url?.replace(/\/$/, "");
+function RecommendedCourses({ courses }: { courses: Course[] }) {
+  if (courses.length === 0) return null;
+
+  return (
+    <section className="mx-auto max-w-6xl px-6 py-16">
+      <div className="flex items-end justify-between">
+        <h2 className="font-display text-2xl text-ink">
+          Advance your career:{" "}
+          <span className="text-maroon">Next Recommended</span> Courses
+        </h2>
+        <Link
+          href="/#courses"
+          className="hidden rounded-full border border-maroon/40 bg-cream-card px-4 py-2 font-mono text-xs uppercase tracking-[0.1em] text-ink transition hover:-translate-y-0.5 hover:border-maroon hover:bg-maroon hover:text-cream-card hover:shadow-md sm:inline"
+        >
+          View all courses
+        </Link>
+      </div>
+      <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-ink-soft">
+        Recommended for you
+      </p>
+
+      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {courses.map((course, i) => (
+          <CourseCard key={course.id} course={course} index={i} />
+        ))}
+      </div>
+    </section>
+  );
 }
 
-function CertificatePageContent({ record }: { record: CertificateRecord }) {
+function CertificatePageContent({
+  record,
+  courses,
+}: {
+  record: CertificateRecord;
+  courses: Course[];
+}) {
+  const reviews = record.instructorReviews.slice(0, 2);
+
   return (
     <>
       <Hero>
@@ -26,44 +61,36 @@ function CertificatePageContent({ record }: { record: CertificateRecord }) {
           <CertificateRecordCard record={record} />
 
           <div className="flex flex-col gap-6">
-            <InterviewVideoCard studentName={record.studentName} />
-            <TestimonialCard
-              name={record.instructor.name}
-              role={record.instructor.title}
-              quote={record.instructor.quote}
+            <InterviewVideoCard
+              studentName={record.studentName}
+              videoUrl={record.videoUrl}
             />
-            <TestimonialCard
-              name={record.instructor.name}
-              role={record.instructor.title}
-              quote="Consistently proactive in code review, and quick to turn feedback into cleaner, better-tested pull requests."
-            />
+            {reviews.map((review) => (
+              <TestimonialCard
+                key={review.id}
+                name={review.name}
+                role={review.title}
+                quote={review.quote}
+              />
+            ))}
           </div>
         </div>
       </PanelShell>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="flex items-end justify-between">
-          <h2 className="font-display text-2xl text-ink">
-            Advance your career:{" "}
-            <span className="text-maroon">Next Recommended</span> Courses
-          </h2>
-          <a
-            href="#"
-            className="hidden rounded-full border border-line px-4 py-2 font-mono text-xs uppercase tracking-[0.1em] text-ink-soft transition hover:border-maroon hover:text-maroon sm:inline"
-          >
-            View all courses
-          </a>
-        </div>
-        <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-ink-soft">
-          Recommended for you
-        </p>
+      <RecommendedCourses courses={courses} />
+    </>
+  );
+}
 
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {record.recommendedCourses.map((course, i) => (
-            <CourseCard key={course.slug} course={course} index={i} />
-          ))}
-        </div>
-      </section>
+function PendingNotice({ id, message }: { id: string; message: string }) {
+  return (
+    <>
+      <Hero>
+        <QuickSearch initialId={id} />
+      </Hero>
+      <PanelShell eyebrow={`Certificate Record — ${id}`}>
+        <EmptyRecordCard message={message} tone="idle" />
+      </PanelShell>
     </>
   );
 }
@@ -74,25 +101,17 @@ export default async function CertificatePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const mockRecord = lookupCertificate(id);
-  if (mockRecord) {
-    return <CertificatePageContent record={mockRecord} />;
+
+  const [result, courses] = await Promise.all([getCertificate(id), getCourses()]);
+
+  if (result.status === "verified") {
+    return <CertificatePageContent record={result.record} courses={courses} />;
   }
 
-  const backendUrl = getBackendUrl();
-  if (!backendUrl) {
-    notFound();
+  if (result.status === "pending") {
+    return <PendingNotice id={result.code} message={result.message} />;
   }
 
-  const res = await fetch(
-    `${backendUrl}/api/certificates/${encodeURIComponent(id)}`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) {
-    notFound();
-  }
-
-  const record = (await res.json()) as CertificateRecord;
-  return <CertificatePageContent record={record} />;
+  // not_found or error -> render the framework 404.
+  notFound();
 }
