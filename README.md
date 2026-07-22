@@ -24,11 +24,16 @@ certificate lookup returns 404.
 models in `lib/types.ts` (`CertificateRecord`, `Course`, `GeneralData`).
 
 Point it at the backend with `BACKEND_URL`; it defaults to
-`http://127.0.0.1:8000`:
+`http://127.0.0.1:8000`. Production is
+`https://senioracademy.activegroup-eg.com` (set in `.env.production`):
 
 ```bash
-BACKEND_URL=https://api.example.com npm run dev
+BACKEND_URL=https://senioracademy.activegroup-eg.com npm run dev
 ```
+
+`BACKEND_URL` is needed at **build** time as well as runtime: `/` is
+statically prerendered with `revalidate: 300`, so its course list is fetched
+while building. Certificate pages are dynamic and fetch per request.
 
 Every call runs server-side (server components + route handlers), so the
 browser never talks to Laravel directly and no CORS config is needed.
