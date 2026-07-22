@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+:root {
+  /* Primary brand color: #ab0d10 with derived palette */
+  --cream: #fbf3e7;
+  --cream-card: #ffffff;
+  --ink: #1c1f2b;
+  --ink-soft: #6b6f7c;
+
+  --maroon: #ab0d10;
+  --maroon-deep: #7d090c;
+  --maroon-panel: #9d0b0e;
+  --maroon-card: #6b0608;
+  --maroon-card-line: rgba(255, 255, 255, 0.14);
+
+  --gold: #d4343d;
+  --gold-deep: #ab0d10;
+  --gold-soft: #f5d4d6;
+
+  --line: #e7dcc9;
+
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-cream-card: var(--cream-card);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-maroon: var(--maroon);
+  --color-maroon-deep: var(--maroon-deep);
+  --color-maroon-panel: var(--maroon-panel);
+  --color-maroon-card: var(--maroon-card);
+  --color-gold: var(--gold);
+  --color-gold-deep: var(--gold-deep);
+  --color-gold-soft: var(--gold-soft);
+  --color-line: var(--line);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+/* ---------------------------------- */
+/* Motion system                       */
+/* ---------------------------------- */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+
+.anim-fade-up,
+.anim-fade-down,
+.anim-scale-in {
+  opacity: 0;
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.anim-fade-down {
+  animation-name: fade-down;
+}
+.anim-scale-in {
+  animation-name: scale-in;
+}
+
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.22s; }
+.anim-delay-3 { animation-delay: 0.34s; }
+.anim-delay-4 { animation-delay: 0.46s; }
+.anim-delay-5 { animation-delay: 0.6s; }
+
+.anim-float {
+  animation: float-soft 6s ease-in-out infinite;
+}
+.anim-float-slow {
+  animation: float-soft 9s ease-in-out infinite;
+}
+
+/* button sheen sweep on hover */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  animation: sheen 0.7s ease forwards;
+}
+
+/* card lift used across the site */
+.card-lift {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease;
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px -18px rgba(171, 13, 16, 0.28);
+  border-color: rgba(171, 13, 16, 0.35);
+}
+
+/* animated underline for text links */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.3s ease;
+}
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up,
+  .anim-fade-down,
+  .anim-scale-in {
+    animation: none;
+    opacity: 1;
+  }
+  .anim-float,
+  .anim-float-slow {
+    animation: none;
+  }
+  .card-lift,
+  .card-lift:hover {
+    transform: none;
+  }
+}
+
+/* faint scattered iconography watermark for the empty credential panel */
+.panel-texture {
+  background-image: radial-gradient(
+      circle at 12% 22%,
+      rgba(255, 255, 255, 0.06) 0,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 88% 78%,
+      rgba(255, 255, 255, 0.05) 0,
+      transparent 55%
+    );
+}
+
+

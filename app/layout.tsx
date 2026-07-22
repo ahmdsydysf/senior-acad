@@ -1,0 +1,45 @@
+import type { Metadata } from "next";
+import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
+import "./globals.css";
+import SiteFooter from "@/components/site-footer";
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  axes: ["opsz", "SOFT", "WONK"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+});
+
+export const metadata: Metadata = {
+  title: "Senior Academy — Certificate Verification",
+  description:
+    "Verify and download programming certificates issued by Senior Academy.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col bg-cream text-ink">
+        <main className="flex-1">{children}</main>
+        <SiteFooter />
+      </body>
+    </html>
+  );
+}
