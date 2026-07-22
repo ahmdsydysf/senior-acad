@@ -4,7 +4,12 @@
 // browser never talks to Laravel directly and no CORS config is required.
 // Point it at the backend with the BACKEND_URL env var (see .env.example).
 
-import { CertificateRecord, Course, InstructorReview } from "./types";
+import {
+  CertificateRecord,
+  Course,
+  GeneralData,
+  InstructorReview,
+} from "./types";
 
 const BACKEND_URL = (
   process.env.BACKEND_URL ?? "http://127.0.0.1:8000"
@@ -170,6 +175,32 @@ export async function verifyCertificate(
     exists: Boolean(body?.exists),
     status: body?.status ?? null,
   };
+}
+
+/**
+ * Site-wide About Us / Contact Us copy. The backend attaches a `general` block
+ * to every response; we read it off /home since that call is already made on
+ * both pages (Next dedupes identical fetches within a render, so this adds no
+ * extra request).
+ *
+ * Returns null when unreachable — callers fall back to their built-in copy
+ * rather than rendering an empty header.
+ */
+export async function getGeneralData(): Promise<GeneralData | null> {
+  let res: Response;
+  try {
+    res = await fetch(apiUrl("home"), {
+      next: { revalidate: 300 },
+      headers: JSON_HEADERS,
+    });
+  } catch {
+    return null;
+  }
+
+  if (!res.ok) return null;
+
+  const body = await res.json().catch(() => null);
+  return (body?.general as GeneralData) ?? null;
 }
 
 /**

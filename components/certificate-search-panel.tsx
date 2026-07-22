@@ -6,10 +6,15 @@ import Hero from "@/components/hero";
 import HeroSearchForm from "@/components/hero-search-form";
 import PanelShell from "@/components/panel-shell";
 import EmptyRecordCard from "@/components/empty-record-card";
+import type { GeneralData } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "not_found" | "error";
 
-export default function CertificateSearchPanel() {
+export default function CertificateSearchPanel({
+  about,
+}: {
+  about?: GeneralData["about"] | null;
+}) {
   const router = useRouter();
   const [certId, setCertId] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
@@ -51,12 +56,13 @@ export default function CertificateSearchPanel() {
 
   return (
     <>
-      <Hero>
+      <Hero about={about}>
         <HeroSearchForm
           value={certId}
           onChange={setCertId}
           onSubmit={handleSubmit}
           loading={phase === "loading"}
+          mission={about?.mission}
         />
       </Hero>
 

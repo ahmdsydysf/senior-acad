@@ -2,16 +2,20 @@
 
 import { FormEvent } from "react";
 
+const FALLBACK_MISSION = "Trusted & secured by Senior Academy technology";
+
 export default function HeroSearchForm({
   value,
   onChange,
   onSubmit,
   loading = false,
+  mission,
 }: {
   value: string;
   onChange: (v: string) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   loading?: boolean;
+  mission?: string | null;
 }) {
   return (
     <div className="w-full">
@@ -75,7 +79,7 @@ export default function HeroSearchForm({
           <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 text-gold-deep" fill="currentColor">
             <path d="M10 1.5 3 4.5v5c0 5 3 8.5 7 9.5 4-1 7-4.5 7-9.5v-5L10 1.5Z" />
           </svg>
-          Trusted &amp; secured by Senior Academy technology
+          {mission || FALLBACK_MISSION}
         </span>
       </div>
     </div>

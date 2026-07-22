@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CertificateRecord, Course } from "@/lib/types";
-import { getCertificate, getCourses } from "@/lib/api";
+import { CertificateRecord, Course, GeneralData } from "@/lib/types";
+import { getCertificate, getCourses, getGeneralData } from "@/lib/api";
 import Hero from "@/components/hero";
 import QuickSearch from "@/components/quick-search";
 import PanelShell from "@/components/panel-shell";
@@ -44,16 +44,18 @@ function RecommendedCourses({ courses }: { courses: Course[] }) {
 function CertificatePageContent({
   record,
   courses,
+  about,
 }: {
   record: CertificateRecord;
   courses: Course[];
+  about?: GeneralData["about"] | null;
 }) {
   const reviews = record.instructorReviews.slice(0, 2);
 
   return (
     <>
-      <Hero>
-        <QuickSearch initialId={record.id} />
+      <Hero about={about}>
+        <QuickSearch initialId={record.id} mission={about?.mission} />
       </Hero>
 
       <PanelShell eyebrow={`Certificate Record — ${record.id}`}>
@@ -82,11 +84,19 @@ function CertificatePageContent({
   );
 }
 
-function PendingNotice({ id, message }: { id: string; message: string }) {
+function PendingNotice({
+  id,
+  message,
+  about,
+}: {
+  id: string;
+  message: string;
+  about?: GeneralData["about"] | null;
+}) {
   return (
     <>
-      <Hero>
-        <QuickSearch initialId={id} />
+      <Hero about={about}>
+        <QuickSearch initialId={id} mission={about?.mission} />
       </Hero>
       <PanelShell eyebrow={`Certificate Record — ${id}`}>
         <EmptyRecordCard message={message} tone="idle" />
@@ -102,14 +112,30 @@ export default async function CertificatePage({
 }) {
   const { id } = await params;
 
-  const [result, courses] = await Promise.all([getCertificate(id), getCourses()]);
+  const [result, courses, general] = await Promise.all([
+    getCertificate(id),
+    getCourses(),
+    getGeneralData(),
+  ]);
 
   if (result.status === "verified") {
-    return <CertificatePageContent record={result.record} courses={courses} />;
+    return (
+      <CertificatePageContent
+        record={result.record}
+        courses={courses}
+        about={general?.about}
+      />
+    );
   }
 
   if (result.status === "pending") {
-    return <PendingNotice id={result.code} message={result.message} />;
+    return (
+      <PendingNotice
+        id={result.code}
+        message={result.message}
+        about={general?.about}
+      />
+    );
   }
 
   // not_found or error -> render the framework 404.

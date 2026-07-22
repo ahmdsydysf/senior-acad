@@ -4,7 +4,13 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import HeroSearchForm from "@/components/hero-search-form";
 
-export default function QuickSearch({ initialId = "" }: { initialId?: string }) {
+export default function QuickSearch({
+  initialId = "",
+  mission,
+}: {
+  initialId?: string;
+  mission?: string | null;
+}) {
   const router = useRouter();
   const [certId, setCertId] = useState(initialId);
   const [loading, setLoading] = useState(false);
@@ -37,6 +43,7 @@ export default function QuickSearch({ initialId = "" }: { initialId?: string }) 
       onChange={setCertId}
       onSubmit={handleSubmit}
       loading={loading}
+      mission={mission}
     />
   );
 }

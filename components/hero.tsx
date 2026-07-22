@@ -1,7 +1,26 @@
 import { ReactNode } from "react";
 import { Wordmark } from "@/components/logo";
+import type { GeneralData } from "@/lib/types";
 
-export default function Hero({ children }: { children: ReactNode }) {
+// Fallbacks used when the backend is unreachable, so the header never renders
+// blank. These mirror the copy the API currently serves.
+const FALLBACK_SUB_LOGO = "Advancing Tomorrow's Tech Leaders.";
+const FALLBACK_HEADING =
+  '<h3>Verify and Download Your</h3><h3 style="color:#987233">Programming Certificate</h3>';
+const FALLBACK_BODY =
+  "Instantly access your verified credentials and full performance report.";
+
+export default function Hero({
+  children,
+  about,
+}: {
+  children: ReactNode;
+  about?: GeneralData["about"] | null;
+}) {
+  const subLogo = about?.subLogo || FALLBACK_SUB_LOGO;
+  const heading = about?.heading || FALLBACK_HEADING;
+  const body = about?.body || FALLBACK_BODY;
+
   return (
     <section className="relative overflow-hidden bg-cream">
       <div className="relative mx-auto max-w-6xl px-6 pb-14 pt-10 sm:pt-12">
@@ -10,11 +29,7 @@ export default function Hero({ children }: { children: ReactNode }) {
           <Wordmark size="sm" className="mx-auto" />
           <div className="mx-auto mt-5 h-px w-full bg-line" />
           <p className="mt-5 font-display text-base font-medium uppercase tracking-wide leading-relaxed text-[#987233]">
-            Advancing
-            <br />
-            Tomorrow&apos;s
-            <br />
-            Tech Leaders.
+            {subLogo}
           </p>
         </aside>
 
@@ -23,13 +38,21 @@ export default function Hero({ children }: { children: ReactNode }) {
             <Wordmark size="lg" className="mx-auto" />
           </div>
 
-          <h1 className="anim-fade-up anim-delay-1 mx-auto mt-6 max-w-2xl font-display text-4xl leading-[1.1] text-ink sm:text-5xl">
-            Verify and Download Your{" "}
-            <span className="text-[#987233]">Programming Certificate</span>
-          </h1>
+          {/*
+            `heading` is admin-authored HTML from our own backend (two <h3>s,
+            the second carrying the accent colour inline). It is rendered as
+            markup so the CMS keeps control of the wording and emphasis.
+            role/aria-level preserve the h1 semantics that nesting real
+            heading tags inside an <h1> would make invalid.
+          */}
+          <div
+            role="heading"
+            aria-level={1}
+            className="anim-fade-up anim-delay-1 mx-auto mt-6 max-w-2xl text-ink [&_h3]:font-display [&_h3]:text-4xl [&_h3]:leading-[1.1] sm:[&_h3]:text-5xl"
+            dangerouslySetInnerHTML={{ __html: heading }}
+          />
           <p className="anim-fade-up anim-delay-2 mx-auto mt-4 max-w-xl font-body text-base text-ink">
-            Instantly access your verified credentials and full performance
-            report.
+            {body}
           </p>
 
           <div className="anim-fade-up anim-delay-3 mt-8">{children}</div>

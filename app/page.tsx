@@ -1,13 +1,13 @@
 import CertificateSearchPanel from "@/components/certificate-search-panel";
 import CourseCard from "@/components/course-card";
-import { getCourses } from "@/lib/api";
+import { getCourses, getGeneralData } from "@/lib/api";
 
 export default async function Home() {
-  const courses = await getCourses();
+  const [courses, general] = await Promise.all([getCourses(), getGeneralData()]);
 
   return (
     <>
-      <CertificateSearchPanel />
+      <CertificateSearchPanel about={general?.about} />
 
       <section id="courses" className="mx-auto max-w-6xl px-6 py-16">
         <div className="flex items-end justify-between">
