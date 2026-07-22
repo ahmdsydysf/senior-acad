@@ -6,9 +6,7 @@ import Hero from "@/components/hero";
 import QuickSearch from "@/components/quick-search";
 import PanelShell from "@/components/panel-shell";
 import EmptyRecordCard from "@/components/empty-record-card";
-import CertificateRecordCard from "@/components/certificate-record-card";
-import InterviewVideoCard from "@/components/interview-video-card";
-import TestimonialCard from "@/components/testimonial-card";
+import CertificateRecordBody from "@/components/certificate-record-body";
 import CourseCard from "@/components/course-card";
 
 function RecommendedCourses({ courses }: { courses: Course[] }) {
@@ -50,8 +48,6 @@ function CertificatePageContent({
   courses: Course[];
   about?: GeneralData["about"] | null;
 }) {
-  const reviews = record.instructorReviews.slice(0, 2);
-
   return (
     <>
       <Hero about={about}>
@@ -59,24 +55,7 @@ function CertificatePageContent({
       </Hero>
 
       <PanelShell eyebrow={`Certificate Record — ${record.id}`}>
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <CertificateRecordCard record={record} />
-
-          <div className="flex flex-col gap-6">
-            <InterviewVideoCard
-              studentName={record.studentName}
-              videoUrl={record.videoUrl}
-            />
-            {reviews.map((review) => (
-              <TestimonialCard
-                key={review.id}
-                name={review.name}
-                role={review.title}
-                quote={review.quote}
-              />
-            ))}
-          </div>
-        </div>
+        <CertificateRecordBody record={record} />
       </PanelShell>
 
       <RecommendedCourses courses={courses} />

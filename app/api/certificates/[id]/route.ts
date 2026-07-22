@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyCertificate } from "@/lib/api";
+import { getCertificate } from "@/lib/api";
 
-// Lightweight existence check the search boxes hit before navigating to the
-// full certificate page. Proxies GET /api/v1/certificates/verify on the backend
-// so the browser stays same-origin (no CORS needed).
+// Certificate lookup for the search boxes. Proxies the Laravel API so the
+// browser stays same-origin (no CORS needed) and the backend URL is never
+// exposed to the client.
+//
+// Returns the full CertificateResult union so the homepage can render the
+// record in place instead of navigating to /certificate/[id].
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { exists, status } = await verifyCertificate(id);
+  const result = await getCertificate(id);
 
-  if (!exists) {
-    return NextResponse.json({ exists: false, id }, { status: 404 });
+  switch (result.status) {
+    case "verified":
+    case "pending":
+      return NextResponse.json(result);
+    case "not_found":
+      return NextResponse.json(result, { status: 404 });
+    default:
+      // Backend unreachable or malformed — this is an upstream failure, not a
+      // bad request from the client.
+      return NextResponse.json(result, { status: 502 });
   }
-
-  return NextResponse.json({ exists: true, id, status });
 }
