@@ -1,4 +1,9 @@
 import Image from "next/image";
+// Statically imported so the emitted asset URL carries `basePath`. A plain
+// string src like "/logo.png" is not basePath-aware: the optimizer would look
+// for /logo.png while the file is served from <basePath>/logo.png, and every
+// image 400s.
+import logoSrc from "@/public/logo.png";
 
 export default function LogoMark({ className = "" }: { className?: string }) {
   return (
@@ -27,7 +32,7 @@ export function Wordmark({
   return (
     <div className={`flex flex-col ${isLg ? "items-center" : ""} ${className}`}>
       <Image
-        src="/logo.png"
+        src={logoSrc}
         alt="Senior Academy Logo"
         width={isLg ? 300 : 200}
         height={isLg ? 150 : 100}

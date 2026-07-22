@@ -48,12 +48,24 @@ request to the Next.js request handler.
    - **Application startup file**: `server.js`
    - **Application mode**: `Production`
    - **Node.js version**: 20.9 or newer (24.x is fine)
-3. Add an environment variable **`BACKEND_URL`** pointing at the Laravel API
+3. If Passenger mounts the app under a sub-directory, Next must know the
+   prefix or **every route 404s**. Check the cPanel-generated `.htaccess`:
+
+   ```bash
+   grep -rn -i passenger ~ --include=.htaccess
+   ```
+
+   Whatever `PassengerBaseURI` reports (e.g. `/academyofsenior`) must match
+   `NEXT_PUBLIC_BASE_PATH` in `.env.production`, which feeds `basePath` in
+   `next.config.ts`. Add the same variable in the cPanel panel's environment
+   variables too, so runtime config never depends on which `.env` file the
+   host happens to load. Serving from a domain root instead? Set it empty.
+4. Add an environment variable **`BACKEND_URL`** pointing at the Laravel API
    (e.g. `https://api.yourdomain.com`). Without it the app falls back to
    `http://127.0.0.1:8000`, and the site loads but shows no courses and 404s
    every certificate.
-4. Click **Run NPM Install**.
-5. Build. `server.js` cannot boot without a production build in `.next/`.
+5. Click **Run NPM Install**.
+6. Build. `server.js` cannot boot without a production build in `.next/`.
 
    Shared plans cap address space at 4 GB, and if the host falls back to the
    WASM compiler instead of `@next/swc-linux-x64-gnu`, `next build` dies with
@@ -63,16 +75,18 @@ request to the Next.js request handler.
 
    ```bash
    npm run build
-   tar -czf next-build.tar.gz --exclude='./.next/cache' ./.next
+   tar -czf next-build.tar.gz --exclude='./.next/cache' ./.next ./next.config.ts ./.env.production
    ```
 
    Upload `next-build.tar.gz` to the app root and extract it there (cPanel
    File Manager → Extract). `.next/cache` is deliberately excluded; it is
-   build-time only and not needed to serve.
-6. **Restart** the app (or `touch tmp/restart.txt`, which is how Passenger
+   build-time only and not needed to serve. `next.config.ts` is bundled
+   because Next reads it at **runtime** as well as build time — a stale copy
+   on the host means a stale `basePath`.
+7. **Restart** the app (or `touch tmp/restart.txt`, which is how Passenger
    picks up changes).
 
-Re-run step 5 on every code change — the host serves the uploaded `.next`,
+Re-run step 6 on every code change — the host serves the uploaded `.next`,
 not your source.
 
 If images 500 in production, the host is missing `sharp`. Either re-run NPM

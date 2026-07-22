@@ -21,7 +21,11 @@ export default function CertificateSearchPanel() {
 
     setPhase("loading");
     try {
-      const res = await fetch(`/api/certificates/${encodeURIComponent(id)}`);
+      // basePath is applied to <Link>/router/next-image automatically, but not
+      // to hand-written fetch URLs — prefix it explicitly.
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_PATH}/api/certificates/${encodeURIComponent(id)}`
+      );
       if (res.status === 404) {
         setPhase("not_found");
         return;

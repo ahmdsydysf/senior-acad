@@ -20,10 +20,22 @@ const port = process.env.PORT || 3000;
 const app = next({ dev: false, dir: __dirname });
 const handle = app.getRequestHandler();
 
+// Temporary: logs the path Passenger actually forwards, so a 404 caused by a
+// sub-directory mount is visible in the app's log. Remove once routing is
+// confirmed, or set DEBUG_REQUESTS=0 in the cPanel env vars.
+const debugRequests = process.env.DEBUG_REQUESTS !== "0";
+
 app
   .prepare()
   .then(() => {
     createServer((req, res) => {
+      if (debugRequests) {
+        console.log(
+          `[req] method=${req.method} url=${req.url} host=${req.headers.host}` +
+            ` x-forwarded-host=${req.headers["x-forwarded-host"] || "-"}` +
+            ` script-name=${process.env.SCRIPT_NAME || "-"}`
+        );
+      }
       handle(req, res).catch((err) => {
         console.error("Error handling request:", req.url, err);
         res.statusCode = 500;
