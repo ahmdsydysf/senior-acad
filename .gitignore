@@ -20,6 +20,10 @@
 # production
 /build
 
+# deploy bundle produced for cPanel upload (see README)
+/next-build.tar.gz
+/next-build.zip
+
 # misc
 .DS_Store
 *.pem
