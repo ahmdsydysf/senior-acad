@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { Course } from "@/lib/types";
 
@@ -17,7 +16,6 @@ export default function CourseCard({
 }) {
   const gradient = THUMB_GRADIENTS[index % THUMB_GRADIENTS.length];
   const level = course.level ?? "Course";
-  const href = course.syllabusUrl ?? "#";
 
   return (
     <div className="card-lift group flex flex-col overflow-hidden rounded-2xl border border-line bg-cream-card">
@@ -68,16 +66,33 @@ export default function CourseCard({
           </div>
         </div>
 
-        <Link
-          href={href}
-          className="btn-sheen mt-5 inline-flex items-center justify-center gap-1.5 rounded-full border border-maroon px-4 py-2 font-body text-sm text-maroon transition-all duration-300 hover:bg-maroon hover:text-cream-card hover:shadow-[0_6px_18px_-6px_rgba(171,13,16,0.5)] active:scale-95"
-        >
-          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <rect x="2.5" y="2" width="11" height="12" rx="1.2" />
-            <path d="M5 5.5h6M5 8h6M5 10.5h4" strokeLinecap="round" />
-          </svg>
-          View Syllabus
-        </Link>
+        {course.syllabusUrl ? (
+          <a
+            href={course.syllabusUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-sheen mt-5 inline-flex items-center justify-center gap-1.5 rounded-full border border-maroon px-4 py-2 font-body text-sm text-maroon transition-all duration-300 hover:bg-maroon hover:text-cream-card hover:shadow-[0_6px_18px_-6px_rgba(171,13,16,0.5)] active:scale-95"
+          >
+            <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="2.5" y="2" width="11" height="12" rx="1.2" />
+              <path d="M5 5.5h6M5 8h6M5 10.5h4" strokeLinecap="round" />
+            </svg>
+            View Syllabus
+          </a>
+        ) : (
+          // No syllabus published for this course yet — show the button as
+          // disabled rather than linking to a dead "#".
+          <span
+            aria-disabled="true"
+            className="mt-5 inline-flex cursor-not-allowed items-center justify-center gap-1.5 rounded-full border border-line px-4 py-2 font-body text-sm text-ink-soft/60"
+          >
+            <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="2.5" y="2" width="11" height="12" rx="1.2" />
+              <path d="M5 5.5h6M5 8h6M5 10.5h4" strokeLinecap="round" />
+            </svg>
+            Syllabus coming soon
+          </span>
+        )}
       </div>
     </div>
   );
