@@ -9,9 +9,9 @@ export default async function Home() {
     <>
       <CertificateExplorer about={general?.about} />
 
-      <section id="courses" className="mx-auto max-w-6xl px-6 py-16">
-        <div className="flex items-end justify-between">
-          <h2 className="font-display text-2xl text-ink">
+      <section id="courses" className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="max-w-2xl font-display text-xl leading-tight text-ink sm:text-2xl">
             Advance your career:{" "}
             <span className="text-maroon">Next Recommended</span> Courses
           </h2>

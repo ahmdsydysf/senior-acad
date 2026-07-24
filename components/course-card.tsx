@@ -18,7 +18,7 @@ export default function CourseCard({
   const level = course.level ?? "Course";
 
   return (
-    <div className="card-lift group flex flex-col overflow-hidden rounded-2xl border border-line bg-cream-card">
+    <div className="card-lift group flex flex-col overflow-hidden rounded-[1.4rem] border border-line bg-cream-card">
       <div className={`relative aspect-[16/10] overflow-hidden bg-gradient-to-br ${gradient}`}>
         {/* The gradient stays as the backdrop, so courses the backend has no
             cover for still look deliberate rather than broken. */}
@@ -37,16 +37,16 @@ export default function CourseCard({
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between p-5">
+      <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-gold-deep">
             {level}
           </p>
-          <h3 className="mt-1.5 font-display text-lg leading-snug text-ink transition-colors duration-300 group-hover:text-maroon">
+          <h3 className="mt-1.5 font-display text-[1.05rem] leading-snug text-ink transition-colors duration-300 group-hover:text-maroon sm:text-lg">
             {course.title}
           </h3>
 
-          <div className="mt-3 flex items-center gap-4 font-mono text-xs text-ink-soft">
+          <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-[11px] text-ink-soft sm:gap-4 sm:text-xs">
             <span className="inline-flex items-center gap-1">
               <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.4">
                 <rect x="2.5" y="2.5" width="11" height="11" rx="1.2" />
@@ -71,7 +71,7 @@ export default function CourseCard({
             href={course.syllabusUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-sheen mt-5 inline-flex items-center justify-center gap-1.5 rounded-full border border-maroon px-4 py-2 font-body text-sm text-maroon transition-all duration-300 hover:bg-maroon hover:text-cream-card hover:shadow-[0_6px_18px_-6px_rgba(171,13,16,0.5)] active:scale-95"
+            className="btn-sheen mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-maroon px-4 py-2.5 font-body text-sm text-maroon transition-all duration-300 hover:bg-maroon hover:text-cream-card hover:shadow-[0_6px_18px_-6px_rgba(171,13,16,0.5)] active:scale-95 sm:w-auto"
           >
             <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
               <rect x="2.5" y="2" width="11" height="12" rx="1.2" />
@@ -84,7 +84,7 @@ export default function CourseCard({
           // disabled rather than linking to a dead "#".
           <span
             aria-disabled="true"
-            className="mt-5 inline-flex cursor-not-allowed items-center justify-center gap-1.5 rounded-full border border-line px-4 py-2 font-body text-sm text-ink-soft/60"
+            className="mt-5 inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-full border border-line px-4 py-2.5 font-body text-sm text-ink-soft/60 sm:w-auto"
           >
             <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
               <rect x="2.5" y="2" width="11" height="12" rx="1.2" />

@@ -27,7 +27,7 @@ const HeroHeading = memo(function HeroHeading({ html }: { html: string }) {
     <div
       role="heading"
       aria-level={1}
-      className="anim-fade-up anim-delay-1 mx-auto mt-6 max-w-2xl text-ink [&_h3]:font-display [&_h3]:text-4xl [&_h3]:leading-[1.1] sm:[&_h3]:text-5xl"
+      className="anim-fade-up anim-delay-1 mx-auto mt-6 max-w-2xl text-ink [&_h3]:font-display [&_h3]:text-[2rem] [&_h3]:leading-[1.08] [&_h3]:sm:text-5xl [&_h3]:md:text-[3.2rem]"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -46,7 +46,7 @@ export default function Hero({
 
   return (
     <section className="relative overflow-hidden bg-cream">
-      <div className="relative mx-auto max-w-6xl px-6 pb-14 pt-10 sm:pt-12">
+      <div className="relative mx-auto max-w-6xl px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 md:pt-12">
         {/* Brand card hanging flush from the top edge, aligned to the content's left margin */}
         <aside className="anim-fade-down anim-delay-2 absolute left-6 top-0 hidden w-60 rounded-b-2xl border border-t-0 border-line bg-cream-card px-6 pb-8 pt-6 text-center shadow-sm transition-shadow duration-300 hover:shadow-lg xl:block">
           <Wordmark size="sm" className="mx-auto" />
@@ -62,11 +62,11 @@ export default function Hero({
           </div>
 
           <HeroHeading html={heading} />
-          <p className="anim-fade-up anim-delay-2 mx-auto mt-4 max-w-xl font-body text-base text-ink">
+          <p className="anim-fade-up anim-delay-2 mx-auto mt-4 max-w-xl px-2 font-body text-sm text-ink sm:text-base">
             {body}
           </p>
 
-          <div className="anim-fade-up anim-delay-3 mt-8">{children}</div>
+          <div className="anim-fade-up anim-delay-3 mt-6 sm:mt-8">{children}</div>
         </div>
       </div>
     </section>
